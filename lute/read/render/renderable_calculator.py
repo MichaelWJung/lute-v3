@@ -330,6 +330,13 @@ class TokenLocator:
         # We need to convert the matched text back to the _original_
         # subject string cases.
         subj = self.subject
+        new_indices = []
+        i = 0
+        for c in subj:
+            if c != "\u0301":
+                new_indices.append(i)
+            i += 1
+        new_indices.append(i)
 
         def make_text_index_pair(match):
             matchtext = match[0]  # includes zws at start and end.
@@ -337,10 +344,12 @@ class TokenLocator:
             matchpos = match[1]
 
             # print(f"found match \"{matchtext}\" len={matchlen} pos={matchpos}")
-            original_subject_text = subj[matchpos : matchpos + matchlen]
+            original_subject_text = subj[
+                new_indices[matchpos] : new_indices[matchpos + matchlen]
+            ]
             zws = "\u200B"
             t = original_subject_text.lstrip(zws).rstrip(zws)
-            index = self.get_count_before(subj, matchpos)
+            index = self.get_count_before(self.subjLC, matchpos)
             return {"text": t, "index": index}
 
         termmatches = list(map(make_text_index_pair, matches))

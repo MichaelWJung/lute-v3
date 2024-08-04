@@ -169,4 +169,6 @@ class AbstractParser(ABC):
         Most languages can use the built-in lowercase operation,
         but some (like Turkish) need special handling.
         """
+        text = text.replace("\u0301", "")
+        text = text.replace("ё", "е")
         return text.lower()
